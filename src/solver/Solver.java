@@ -23,10 +23,13 @@ public class Solver {
         int totalConfigs = 0;
         int uniqueConfigs = 0;
 
+        boolean foundSolution = false;
+
         while(!queue.isEmpty()){
             Configuration current = queue.remove();
             if(current.isSolution()){
                 display(totalConfigs, uniqueConfigs, predecessor, current);
+                foundSolution = true;
                 break;
             }
             else {
@@ -41,7 +44,7 @@ public class Solver {
             }
         }
 
-        if(queue.isEmpty()) {
+        if(!foundSolution) {
             display(totalConfigs, uniqueConfigs, null, null);
         }
     }

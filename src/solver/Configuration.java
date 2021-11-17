@@ -1,17 +1,41 @@
 package solver;
 
+import java.util.List;
+
 /**
  * Configuration abstraction for the solver algorithm
  *
- * @author YOUR NAME HERE
- * November 2021
+ * @author Eli Lurie
  */
 public interface Configuration {
+    /**
+     * Get the neighbors of the configuration
+     * @return list of configurations
+     */
+    List<Configuration> getNeighbors();
 
-    // Tips
-    // Include methods
-    // - for the solver: is-goal, get-successors
-    // - for get-successors: a copy constructor (can't declare here)
-    // - for equality comparison and hashing
-    // - for creating a displayable version the configuration
+    /**
+     * Determines if the configuration is the solution
+     * @return true if is solution, else false
+     */
+    boolean isSolution();
+
+    /**
+     * Overrides the hash code method
+     * @return hashCode
+     */
+    int hashCode();
+
+    /**
+     * Overrides the equals method
+     * @param other object to compare to
+     * @return true if equal, false if not
+     */
+    boolean equals(Object other);
+
+    /**
+     * Overrides the toString method
+     * @return String
+     */
+    String toString();
 }

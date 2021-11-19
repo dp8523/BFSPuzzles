@@ -3,6 +3,7 @@ package puzzles.tipover;
 import puzzles.tipover.model.TipOverConfig;
 import solver.Solver;
 import util.Coordinates;
+import util.Grid;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,10 +31,10 @@ public class TipOver {
             int width = scanner.nextInt();
             Coordinates position = new Coordinates(scanner.nextInt(), scanner.nextInt());
             Coordinates goal = new Coordinates(scanner.nextInt(), scanner.nextInt());
-            int[][] board = new int[height][width];
+            Grid<Integer> board = new Grid<>(0, height, width);
             for(int i=0; i<height; i++){
                 for(int j=0; j<width; j++){
-                    board[i][j] = scanner.nextInt();
+                    board.set(scanner.nextInt(), i, j);
                 }
             }
             TipOverConfig initialConfig = new TipOverConfig(board, position, goal);

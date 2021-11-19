@@ -13,26 +13,12 @@ import java.util.List;
  * November 2021
  */
 public class TipOverConfig implements Configuration {
-    private final Grid<Num> board;
-    private record Num(int val){}
-    private final Coordinates cords;
+    private Grid<Integer> board;
+    private Coordinates cords;
     private final Coordinates goal;
 
 
-    public TipOverConfig(int[][] board, Coordinates cords, Coordinates goal){
-        Num initialNum = new Num(0);
-        this.board = new Grid<>(initialNum, board.length, board[0].length);
-        for(int i=0; i<board.length; i++){
-            for(int j=0; j<board[0].length; j++){
-                Num toSet = new Num(board[i][j]);
-                this.board.set(toSet, i, j);
-            }
-        }
-        this.cords = cords;
-        this.goal = goal;
-    }
-
-    public TipOverConfig(Grid<Num> board, Coordinates cords, Coordinates goal){
+    public TipOverConfig(Grid<Integer> board, Coordinates cords, Coordinates goal){
         this.board = board;
         this.cords = cords;
         this.goal = goal;
@@ -42,9 +28,33 @@ public class TipOverConfig implements Configuration {
         List<Configuration> toReturn = new ArrayList<>();
         for(Coordinates.Direction d : Coordinates.CARDINAL_NEIGHBORS){
             Coordinates newCords = cords.sum(d.coords);
-            if(board.legalCoords(newCords) && board.get(newCords).val != 0){
+            if(board.legalCoords(newCords) && board.get(newCords) != 0){
                 TipOverConfig newConfig = new TipOverConfig(board, newCords, goal);
                 toReturn.add(newConfig);
+            }
+        }
+
+        int value = board.get(cords);
+        if(value != 0 && value != 1){
+            for(Coordinates.Direction d : Coordinates.CARDINAL_NEIGHBORS){
+                boolean canFlip = true;
+                for(int i=1; i<=value; i++){
+                    Coordinates newCords = cords.sum(d.coords.multiply(i));
+                    if(!board.legalCoords(newCords) || board.get(newCords) != 0){
+                        canFlip = false;
+                    }
+                }
+                if(canFlip) {
+                    Grid<Integer> newBoard = new Grid<>(board);
+                    Coordinates newCords = cords.sum(d.coords);
+                    newBoard.set(0, cords);
+                    for(int i=1; i<= value; i++){
+                        Coordinates toSet = cords.sum(d.coords.multiply(i));
+                        newBoard.set(1, toSet);
+                    }
+                    TipOverConfig newConfig = new TipOverConfig(newBoard, newCords, goal);
+                    toReturn.add(newConfig);
+                }
             }
         }
 
@@ -55,10 +65,12 @@ public class TipOverConfig implements Configuration {
         return cords.equals(goal);
     }
 
+    @Override
     public int hashCode(){
         return board.hashCode() + cords.hashCode();
     }
 
+    @Override
     public boolean equals(Object other){
         if(other instanceof TipOverConfig newOther){
             return this.board.equals(newOther.board) && this.cords.equals(newOther.cords);
@@ -66,6 +78,7 @@ public class TipOverConfig implements Configuration {
         return false;
     }
 
+    @Override
     public String toString(){
         String toReturn = "\n     ";
         for(int i=0; i<board.getNCols(); i++){
@@ -80,7 +93,7 @@ public class TipOverConfig implements Configuration {
             toReturn += i + " | ";
             for(int j=0; j<board.getNCols(); j++){
                 Coordinates thisCords = new Coordinates(i, j);
-                int value = board.get(thisCords).val;
+                int value = board.get(thisCords);
                 if(thisCords.equals(cords)){
                     toReturn += "*";
                 }
@@ -101,5 +114,25 @@ public class TipOverConfig implements Configuration {
             toReturn += "\n";
         }
         return toReturn;
+    }
+
+    public Coordinates getCords() {
+        return cords;
+    }
+
+    public Coordinates getGoal() {
+        return goal;
+    }
+
+    public Grid<Integer> getBoard(){
+        return board;
+    }
+
+    public void setBoard(Coordinates newCords, int num) {
+        board.set(num, newCords);
+    }
+
+    public void setCords(Coordinates cords){
+        this.cords = cords;
     }
 }

@@ -13,7 +13,7 @@ import java.io.File;
 
 /**
  * DESCRIPTION
- * @author YOUR NAME HERE
+ * @author Eli Lurie
  * November 2021
  */
 public class TipOverGUI extends Application

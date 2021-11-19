@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="TipOverGUI ?" type="Application" factoryName="Application" editBeforeRun="true">
+  <configuration default="false" name="TipOverGUI ?" type="Application" factoryName="Application">
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="puzzles.tipover.gui.TipOverGUI" />
     <module name="BFSPuzzles" />

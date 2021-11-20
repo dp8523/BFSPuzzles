@@ -24,7 +24,7 @@ public class TipOverGUI extends Application
         stage.setTitle( "Tip Over" );
         Image spaceship = new Image(
                 TipOverGUI.class.getResourceAsStream(
-                        "resources" + File.separator + "tipper.png"
+                        "resources/tipper.png"
                 )
         );
         Button temp = new Button();

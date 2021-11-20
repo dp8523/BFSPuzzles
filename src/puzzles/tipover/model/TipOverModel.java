@@ -1,5 +1,6 @@
 package puzzles.tipover.model;
 
+import solver.Solver;
 import util.Coordinates;
 import util.Grid;
 import util.Observer;
@@ -21,44 +22,19 @@ public class TipOverModel {
     private List<Observer<TipOverModel, Object>> observerList;
     private String filename;
 
-    /*
-     * Code here includes...
-     * Additional data variables for anything needed beyond what is in
-     *   the config object to describe the current state of the puzzle
-     * Methods to support the controller part of the GUI, e.g., load, move
-     * Methods and data to support the "subject" side of the Observer pattern
-     *
-     * WARNING: To support the hint command, you will likely have to do
-     *   a cast of Config to TipOverConfig somewhere, since the solve
-     *   method works with, and returns, objects of type Configuration.
-     */
-
     public TipOverModel(String filename){
         observerList = new LinkedList<>();
-        this.filename = filename;
-        try{
-            Scanner scanner = new Scanner(new File(filename));
-            int height = scanner.nextInt();
-            int width = scanner.nextInt();
-            Coordinates position = new Coordinates(scanner.nextInt(), scanner.nextInt());
-            Coordinates goal = new Coordinates(scanner.nextInt(), scanner.nextInt());
-            Grid<Integer> board = new Grid<>(0, height, width);
-            for(int i=0; i<height; i++){
-                for(int j=0; j<width; j++){
-                    board.set(scanner.nextInt(), i, j);
-                }
-            }
-            currentConfig = new TipOverConfig(board, position, goal);
-            announce(null);
-        }
-        catch(FileNotFoundException ex){
-            currentConfig = new TipOverConfig(null, null, null);
-            announce("File not found");
-        }
+        loadFile(filename);
     }
 
     public void move(String direction){
-        if(!Coordinates.Direction.isDirection(direction)) {
+        if(currentConfig == null){
+            announce("Load a file first");
+        }
+        else if(currentConfig.isSolution()){
+            announce("Game completed");
+        }
+        else if(!Coordinates.Direction.isDirection(direction)) {
             announce("Invalid Direction");
         }
         else{
@@ -105,28 +81,69 @@ public class TipOverModel {
     }
 
     public Grid<Integer> getBoard(){
-        return currentConfig.getBoard();
+        return currentConfig == null ? null : currentConfig.getBoard();
     }
 
     public Coordinates getCords(){
-        return currentConfig.getCords();
+        return currentConfig == null ? null : currentConfig.getCords();
     }
 
     public Coordinates getGoal(){
-        return currentConfig.getGoal();
+        return currentConfig == null ? null : currentConfig.getGoal();
     }
 
     public boolean isSolution(){
-        return currentConfig.isSolution();
+        return currentConfig != null && currentConfig.isSolution();
+    }
+
+    public void reloadFile(){
+        loadFile(this.filename);
     }
 
     public void loadFile(String filename){
+        try{
+            Scanner scanner = new Scanner(new File(filename));
+            int height = scanner.nextInt();
+            int width = scanner.nextInt();
+            Coordinates position = new Coordinates(scanner.nextInt(), scanner.nextInt());
+            Coordinates goal = new Coordinates(scanner.nextInt(), scanner.nextInt());
+            Grid<Integer> board = new Grid<>(0, height, width);
+            for(int i=0; i<height; i++){
+                for(int j=0; j<width; j++){
+                    board.set(scanner.nextInt(), i, j);
+                }
+            }
+            currentConfig = new TipOverConfig(board, position, goal);
+            this.filename = filename;
+            announce(null);
+        }
+        catch(FileNotFoundException ex){
+            currentConfig = null;
+            announce("File not found");
+        }
+    }
 
+    public void getHint(){
+        if(currentConfig == null){
+            announce("Load a file first");
+        }
+        else if(currentConfig.isSolution()){
+            announce("Game completed");
+        }
+        else {
+            TipOverConfig newConfig = (TipOverConfig) Solver.getHint(currentConfig);
+            if (newConfig == null) {
+                announce("No solutions");
+            } else {
+                currentConfig = newConfig;
+                announce(null);
+            }
+        }
     }
 
     @Override
     public String toString(){
-        return currentConfig.toString();
+        return currentConfig == null ? "" : currentConfig.toString();
     }
 
     public void addObserver(Observer<TipOverModel, Object> observer){

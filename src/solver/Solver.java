@@ -13,7 +13,7 @@ public class Solver {
      * Performs a breadth first search starting with the inputted configuration.
      * @param initialConfig starting configuration
      */
-    public static void solve(Configuration initialConfig){
+    public static Configuration solver(Configuration initialConfig, boolean toDisplay){
         Queue<Configuration> queue = new LinkedList<>();
         queue.offer(initialConfig);
 
@@ -28,7 +28,12 @@ public class Solver {
         while(!queue.isEmpty()){
             Configuration current = queue.remove();
             if(current.isSolution()){
-                display(totalConfigs, uniqueConfigs, predecessor, current);
+                if(toDisplay) {
+                    display(totalConfigs, uniqueConfigs, predecessor, current);
+                }
+                else{
+                    return nextMove(predecessor, current);
+                }
                 foundSolution = true;
                 break;
             }
@@ -45,8 +50,14 @@ public class Solver {
         }
 
         if(!foundSolution) {
-            display(totalConfigs, uniqueConfigs, null, null);
+            if(toDisplay) {
+                display(totalConfigs, uniqueConfigs, null, null);
+            }
+            else{
+                return null;
+            }
         }
+        return null;
     }
 
     /**
@@ -75,6 +86,45 @@ public class Solver {
         }
         else{
             System.out.println("No solution");
+        }
+    }
+
+    /**
+     * Calls the solver function to display the resulting path.
+     * @param initialConfig starting configuration
+     */
+    public static void solve(Configuration initialConfig){
+        solver(initialConfig, true);
+    }
+
+    /**
+     * Calls the solver function to return the first configuration in the path.
+     * @param initialConfig starting configuration
+     * @return next move to solve the puzzle
+     */
+    public static Configuration getHint(Configuration initialConfig){
+        return solver(initialConfig, false);
+    }
+
+    /**
+     * Returns the first move that will result in the shortest solution.
+     * @param configMap contains the path of configurations
+     * @param lastConfig the solution configuration
+     * @return configuration for the next move
+     */
+    public static Configuration nextMove(Map<Configuration, Configuration> configMap, Configuration lastConfig){
+        if(lastConfig == null){
+            return null;
+        }
+        else{
+            List<Configuration> path = new LinkedList<>();
+            path.add(0, lastConfig);
+            Configuration current = configMap.get(lastConfig);
+            while(current != null){
+                path.add(0, current);
+                current = configMap.get(current);
+            }
+            return path.get(1);
         }
     }
 }

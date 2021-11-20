@@ -31,40 +31,24 @@ public class TipOverPTUI implements Observer<TipOverModel, Object> {
             String line = in.nextLine();
             String[] words = line.split("\\s+");
             if(words.length > 0){
-                switch(words[0]){
-                    case "move":
-                        model.move(words[1].toUpperCase(Locale.ROOT));
-                        break;
-                    case "reload":
-                        //reload
-                        break;
-                    case "load":
-                        //load
-                        break;
-                    case "hint":
-                        //hint
-                        break;
-                    case "show":
-                        displayBoard();
-                        break;
-                    case "quit":
-                        go = false;
-                        break;
-                    case "help":
-                        help();
-                        break;
-                    default:
-                        System.out.println("Invalid command (enter 'help' for a list of commands)");
-                        break;
+                switch (words[0]) {
+                    case "move" -> model.move(words[1].toUpperCase(Locale.ROOT));
+                    case "reload" -> model.reloadFile();
+                    case "load" -> model.loadFile(words[1]);
+                    case "hint" -> model.getHint();
+                    case "show" -> displayBoard();
+                    case "quit" -> go = false;
+                    case "help" -> help();
+                    default -> System.out.println("Invalid command (enter 'help' for a list of commands)");
                 }
             }
         }
     }
 
     public void help(){
-        System.out.println("Legal command are: ");
+        System.out.println("Valid command are: ");
         System.out.println("\t> help : show all commands");
-        System.out.println("\t> move {north|south|east|west} : go in given direction");
+        System.out.println("\t> move {north|south|east|west} : move in given direction");
         System.out.println("\t> reload : load the most recent file again");
         System.out.println("\t> load {filename} : load a new game board file");
         System.out.println("\t> hint : make the next move for me");

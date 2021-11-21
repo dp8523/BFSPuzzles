@@ -1,8 +1,14 @@
 package puzzles.lunarlanding;
 
+import puzzles.lunarlanding.model.LunarLandingConfig;
+import solver.Solver;
+import util.Coordinates;
+
+import java.io.FileNotFoundException;
+
 /**
  * DESCRIPTION
- * @author YOUR NAME HERE
+ * @author Dara Prak
  * November 2021
  */
 public class LunarLanding {
@@ -12,7 +18,13 @@ public class LunarLanding {
      * run the solver on the puzzle
      */
 
-    public static void main( String[] args ) {
-        System.err.println( "REPLACE THIS METHOD!" );
+    public static void main( String[] args ) throws FileNotFoundException {
+        if(args.length != 1)
+        {
+            System.err.println("Usage: java LunarLanding file debug");
+        }else{
+            LunarLandingConfig initialConfig = new LunarLandingConfig(args[0]);
+            Solver.solve(initialConfig);
+        }
     }
 }

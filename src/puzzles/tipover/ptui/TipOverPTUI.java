@@ -7,23 +7,33 @@ import java.util.Locale;
 import java.util.Scanner;
 
 /**
- * DESCRIPTION
+ * The PTUI to display the Tip Over game.
  * @author Eli Lurie
  * November 2021
  */
 public class TipOverPTUI implements Observer<TipOverModel, Object> {
     private TipOverModel model;
 
+    /**
+     * Creates a new model and sets itself as an observer.
+     * @param filename file name
+     */
     public TipOverPTUI(String filename){
         model = new TipOverModel(filename);
         model.addObserver(this);
         update(model, null);
     }
 
+    /**
+     * Displays the current board.
+     */
     public void displayBoard(){
         System.out.println(model.toString());
     }
 
+    /**
+     * Runs the PTUI, letting the user make different commands.
+     */
     public void run(){
         Scanner in = new Scanner(System.in);
         boolean go = true;
@@ -45,6 +55,9 @@ public class TipOverPTUI implements Observer<TipOverModel, Object> {
         }
     }
 
+    /**
+     * Displays all valid user commands.
+     */
     public void help(){
         System.out.println("Valid command are: ");
         System.out.println("\t> help : show all commands");
@@ -56,6 +69,10 @@ public class TipOverPTUI implements Observer<TipOverModel, Object> {
         System.out.println("\t> quit : quit the game");
     }
 
+    /**
+     * Initiates a new PTUI.
+     * @param args filename
+     */
     public static void main( String[] args ) {
         if(args.length == 1) {
             TipOverPTUI ptui = new TipOverPTUI(args[0]);
@@ -66,13 +83,15 @@ public class TipOverPTUI implements Observer<TipOverModel, Object> {
         }
     }
 
+    /**
+     * Updates the PTUI.
+     * @param thisModel the model
+     * @param announce message to display
+     */
     public void update(TipOverModel thisModel, Object announce){
         if(announce != null){
             System.out.println(announce);
         }
         displayBoard();
-        if(model.isSolution()){
-            System.out.println("You Win!");
-        }
     }
 }

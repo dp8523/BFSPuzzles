@@ -10,17 +10,16 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 /**
- * DESCRIPTION
+ * Used to run the Tip Over solver.
  * @author Eli Lurie
  * November 2021
  */
 public class TipOver {
 
-    /*
-     * code to read the file name from the command line and
-     * run the solver on the puzzle
+    /**
+     * Creates a new tip over configuration and inputs it to the solver to run.
+     * @param args file name
      */
-
     public static void main( String[] args ) throws FileNotFoundException {
         if(args.length < 1){
             System.out.println("Usage: java TipOver filename");

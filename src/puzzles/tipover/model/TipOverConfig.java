@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DESCRIPTION
+ * A configuration of the tip over board.
  * @author Eli Lurie
  * November 2021
  */
@@ -17,13 +17,22 @@ public class TipOverConfig implements Configuration {
     private Coordinates cords;
     private final Coordinates goal;
 
-
+    /**
+     * Creates a new configuration.
+     * @param board the game board
+     * @param cords current coordinates
+     * @param goal coordinates of the goal
+     */
     public TipOverConfig(Grid<Integer> board, Coordinates cords, Coordinates goal){
         this.board = board;
         this.cords = cords;
         this.goal = goal;
     }
 
+    /**
+     * Returns a list of all the possible neighbors of the current configuration.
+     * @return list of neighbors
+     */
     public List<Configuration> getNeighbors(){
         List<Configuration> toReturn = new ArrayList<>();
         for(Coordinates.Direction d : Coordinates.CARDINAL_NEIGHBORS){
@@ -61,15 +70,28 @@ public class TipOverConfig implements Configuration {
         return toReturn;
     }
 
+    /**
+     * Returns whether the current coordinates are the solution.
+     * @return true if solution, false otherwise
+     */
     public boolean isSolution(){
         return cords.equals(goal);
     }
 
+    /**
+     * Returns the hashcode of the configuration
+     * @return hash code
+     */
     @Override
     public int hashCode(){
         return board.hashCode() + cords.hashCode();
     }
 
+    /**
+     * Determines whether the current configuration is equal to the inputted configuration.
+     * @param other object to compare to
+     * @return true is equal, false if not
+     */
     @Override
     public boolean equals(Object other){
         if(other instanceof TipOverConfig newOther){
@@ -78,6 +100,10 @@ public class TipOverConfig implements Configuration {
         return false;
     }
 
+    /**
+     * Returns a string representation of the configuration.
+     * @return string
+     */
     @Override
     public String toString(){
         String toReturn = "\n     ";
@@ -116,22 +142,43 @@ public class TipOverConfig implements Configuration {
         return toReturn;
     }
 
+    /**
+     * Returns the current coordinates.
+     * @return coordinates
+     */
     public Coordinates getCords() {
         return cords;
     }
 
+    /**
+     * Returns the goal coordinates.
+     * @return coordinates of goal
+     */
     public Coordinates getGoal() {
         return goal;
     }
 
+    /**
+     * Returns the current board.
+     * @return grid
+     */
     public Grid<Integer> getBoard(){
         return board;
     }
 
+    /**
+     * Sets a specific spot of the board to a new number.
+     * @param newCords coordinates to change
+     * @param num number to set
+     */
     public void setBoard(Coordinates newCords, int num) {
         board.set(num, newCords);
     }
 
+    /**
+     * Sets the current coordinates to new coordinates.
+     * @param cords coordinates
+     */
     public void setCords(Coordinates cords){
         this.cords = cords;
     }

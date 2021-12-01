@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * DESCRIPTION
+ * A model to be used by the GUI and PTUI.
  * @author Eli Lurie
  * November 2021
  */
@@ -22,17 +22,25 @@ public class TipOverModel {
     private List<Observer<TipOverModel, Object>> observerList;
     private String filename;
 
+    /**
+     * Creates a new model and loads the inputted file.
+     * @param filename file to load
+     */
     public TipOverModel(String filename){
         observerList = new LinkedList<>();
         loadFile(filename);
     }
 
+    /**
+     * Moves the player in the inputted direction on the board.
+     * @param direction direction to move
+     */
     public void move(String direction){
         if(currentConfig == null){
             announce("Load a file first");
         }
         else if(currentConfig.isSolution()){
-            announce("Game completed");
+            announce("You Win!");
         }
         else if(!Coordinates.Direction.isDirection(direction)) {
             announce("Invalid Direction");
@@ -80,26 +88,49 @@ public class TipOverModel {
         }
     }
 
+    /**
+     * Returns the current board.
+     * @return board
+     */
     public Grid<Integer> getBoard(){
         return currentConfig == null ? null : currentConfig.getBoard();
     }
 
+    /**
+     * Returns the current coordinates.
+     * @return coordinates
+     */
     public Coordinates getCords(){
         return currentConfig == null ? null : currentConfig.getCords();
     }
 
+    /**
+     * Returns the goal coordinates.
+     * @return goal
+     */
     public Coordinates getGoal(){
         return currentConfig == null ? null : currentConfig.getGoal();
     }
 
+    /**
+     * Determines whether the current configuration is the solution.
+     * @return true if solution, false if not
+     */
     public boolean isSolution(){
         return currentConfig != null && currentConfig.isSolution();
     }
 
+    /**
+     * Reloads the current file.
+     */
     public void reloadFile(){
         loadFile(this.filename);
     }
 
+    /**
+     * Loads a new file.
+     * @param filename file name
+     */
     public void loadFile(String filename){
         try{
             Scanner scanner = new Scanner(new File(filename));
@@ -123,12 +154,15 @@ public class TipOverModel {
         }
     }
 
+    /**
+     * Uses the solver to find the next move that will lead to the shortest solution.
+     */
     public void getHint(){
         if(currentConfig == null){
             announce("Load a file first");
         }
         else if(currentConfig.isSolution()){
-            announce("Game completed");
+            announce("You Win!");
         }
         else {
             TipOverConfig newConfig = (TipOverConfig) Solver.getHint(currentConfig);
@@ -141,15 +175,27 @@ public class TipOverModel {
         }
     }
 
+    /**
+     * Returns a string representation of the configuration.
+     * @return string
+     */
     @Override
     public String toString(){
         return currentConfig == null ? "" : currentConfig.toString();
     }
 
+    /**
+     * Adds a new observer to the observer list.
+     * @param observer observer object
+     */
     public void addObserver(Observer<TipOverModel, Object> observer){
         observerList.add(observer);
     }
 
+    /**
+     * Tells the observers that the model has been updated.
+     * @param arg message to display
+     */
     public void announce(String arg){
         for(var observer : observerList){
             observer.update(this, arg);

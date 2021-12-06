@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
- * DESCRIPTION
+ * Configuration that holds the current state of the game
  * @author Dara Prak
  * November 2021
  */
@@ -18,16 +18,25 @@ public class LunarLandingConfig implements Configuration {
     private Grid<String> currentGrid;
     private static Coordinates landerCords;
     private Coordinates explorerCords;
+    // Map of the robots' Coordinates, and the string that represents them
     private Map<Coordinates, String> robotCordsMap;
+
+    /**
+     * Constructs the initial configuration from an input file
+     * @param filename filename the name of the file to read from
+     * @throws FileNotFoundException if the file is not found
+     */
     public LunarLandingConfig(String filename) throws FileNotFoundException
     {
         try (Scanner in = new Scanner(new File(filename))) {
             int numRows = in.nextInt();
             int numCols = in.nextInt();
             this.currentGrid = new Grid<>("_", numRows, numCols);
+
             int landerRow = in.nextInt();
             int landerCol = in.nextInt();
             landerCords = new Coordinates(landerRow, landerCol);
+
             this.robotCordsMap = new HashMap<>();
             in.nextLine();
             String line = in.nextLine();
@@ -70,6 +79,11 @@ public class LunarLandingConfig implements Configuration {
         }
     }
 
+    /**
+     * The copy constructor takes a config, other, and makes a deep copy of its instance data
+     *
+     * @param other the config to copy
+     */
     public LunarLandingConfig(LunarLandingConfig other)
     {
         this.currentGrid = new Grid<>(other.currentGrid);
@@ -81,7 +95,15 @@ public class LunarLandingConfig implements Configuration {
         this.robotCordsMap = mapCopy;
     }
 
-    private Coordinates getMaxNorth(Grid<String> currentGrid, Coordinates currentCords, Map<Coordinates, String> otherCords)
+    /**
+     * Gets the Coordinates of a figure after moving as far north as possible before it collides with another figure.
+     * If it goes off the grid, null is returned.
+     * @param currentGrid the current arrangement of the grid
+     * @param currentCords the Coordinates of the figure being moved
+     * @param otherCords the map of Coordinates and string representations of the figures it can collide with
+     * @return the new Coordinates of the figure
+     */
+    protected Coordinates getMaxNorth(Grid<String> currentGrid, Coordinates currentCords, Map<Coordinates, String> otherCords)
     {
         Coordinates newCords = currentCords.sum(Coordinates.Direction.NORTH.coords);
         while(currentGrid.legalCoords(newCords))
@@ -95,7 +117,15 @@ public class LunarLandingConfig implements Configuration {
         return null;
     }
 
-    private Coordinates getMaxSouth(Grid<String> currentGrid, Coordinates currentCords, Map<Coordinates, String> otherCords)
+    /**
+     * Gets the Coordinates of a figure after moving as far south as possible before it collides with another figure.
+     * If it goes off the grid, null is returned.
+     * @param currentGrid the current arrangement of the grid
+     * @param currentCords the Coordinates of the figure being moved
+     * @param otherCords the map of Coordinates and string representations of the figures it can collide with
+     * @return the new Coordinates of the figure
+     */
+    protected Coordinates getMaxSouth(Grid<String> currentGrid, Coordinates currentCords, Map<Coordinates, String> otherCords)
     {
         Coordinates newCords = currentCords.sum(Coordinates.Direction.SOUTH.coords);
         while(currentGrid.legalCoords(newCords))
@@ -109,7 +139,15 @@ public class LunarLandingConfig implements Configuration {
         return null;
     }
 
-    private Coordinates getMaxEast(Grid<String> currentGrid, Coordinates currentCords, Map<Coordinates, String> otherCords)
+    /**
+     * Gets the Coordinates of a figure after moving as far east as possible before it collides with another figure.
+     * If it goes off the grid, null is returned.
+     * @param currentGrid the current arrangement of the grid
+     * @param currentCords the Coordinates of the figure being moved
+     * @param otherCords the map of Coordinates and string representations of the figures it can collide with
+     * @return the new Coordinates of the figure
+     */
+    protected Coordinates getMaxEast(Grid<String> currentGrid, Coordinates currentCords, Map<Coordinates, String> otherCords)
     {
         Coordinates newCords = currentCords.sum(Coordinates.Direction.EAST.coords);
         while(currentGrid.legalCoords(newCords))
@@ -123,7 +161,15 @@ public class LunarLandingConfig implements Configuration {
         return null;
     }
 
-    private Coordinates getMaxWest(Grid<String> currentGrid, Coordinates currentCords, Map<Coordinates, String> otherCords)
+    /**
+     * Gets the Coordinates of a figure after moving as far west as possible before it collides with another figure.
+     * If it goes off the grid, null is returned.
+     * @param currentGrid the current arrangement of the grid
+     * @param currentCords the Coordinates of the figure being moved
+     * @param otherCords the map of Coordinates and string representations of the figures it can collide with
+     * @return the new Coordinates of the figure
+     */
+    protected Coordinates getMaxWest(Grid<String> currentGrid, Coordinates currentCords, Map<Coordinates, String> otherCords)
     {
         Coordinates newCords = currentCords.sum(Coordinates.Direction.WEST.coords);
         while(currentGrid.legalCoords(newCords))
@@ -137,6 +183,11 @@ public class LunarLandingConfig implements Configuration {
         return null;
     }
 
+    /**
+     * Gets a list of all possible neighbors of the configuration. It should include all legal possibilities of each
+     * figure moving in each cardinal direction.
+     * @return the configurations for the next possible step in the puzzle
+     */
     public List<Configuration> getNeighbors()
     {
         List<Configuration> neighbors = new ArrayList<>();
@@ -205,6 +256,7 @@ public class LunarLandingConfig implements Configuration {
 
         for(Map.Entry<Coordinates, String> entry: this.robotCordsMap.entrySet())
         {
+            // Creates and fills otherCords with all the figures except this robot
             Map<Coordinates, String> otherCords = new HashMap<>();
             otherCords.putAll(this.robotCordsMap);
             otherCords.remove(entry.getKey());
@@ -297,11 +349,21 @@ public class LunarLandingConfig implements Configuration {
         return neighbors;
     }
 
+    /**
+     * Tells whether the current configuration is the solution, where the explorer is on the lander.
+     * @return true if the explorer is on the lander, false otherwise.
+     */
     public boolean isSolution()
     {
         return this.explorerCords.equals(landerCords);
     }
 
+    /**
+     * Tells whether this LunarLandingConfig equals another object. Two LunarLandingConfigs are equal if they
+     * have the same grid arrangement.
+     * @param other object to compare to
+     * @return True if both are LunarLandingConfigs with matching grids, false otherwise.
+     */
     @Override
     public boolean equals(Object other)
     {
@@ -314,12 +376,20 @@ public class LunarLandingConfig implements Configuration {
         return result;
     }
 
+    /**
+     * Calculates the hashcode of a LunarLandingConfig by using Grid's hashcode method
+     * @return the integer of the LunarLandingConfig's hashcode
+     */
     @Override
     public int hashCode()
     {
         return this.currentGrid.hashCode();
     }
 
+    /**
+     * Creates a string representation of the LunarLandingConfig's currentGrid
+     * @return a string representing the grid
+     */
     @Override
     public String toString()
     {
@@ -350,5 +420,82 @@ public class LunarLandingConfig implements Configuration {
             grid += "\n";
         }
         return grid;
+    }
+
+    /**
+     * Gets a map of all this LunarLandingConfig's figure Coordinates and matching string representations.
+     * @return
+     */
+    public Map<Coordinates, String> getFigureCords()
+    {
+        Map<Coordinates, String> figureCords = new HashMap<>();
+        figureCords.putAll(this.robotCordsMap);
+        figureCords.put(this.explorerCords, "E");
+        return figureCords;
+    }
+
+    /**
+     * Gets the current grid of this LunarLandingConfig
+     * @return the grid
+     */
+    public Grid<String> getCurrentGrid()
+    {
+        return this.currentGrid;
+    }
+
+    /**
+     * Sets a specified position in this grid to the specified String value
+     * @param value the String being set in the grid
+     * @param cords the Coordinates where an element is being changed
+     */
+    public void setCurrentGrid(String value, Coordinates cords)
+    {
+        this.currentGrid.set(value, cords);
+    }
+
+    /**
+     * Gets the Coordinates of the lander
+     * @return the lander's Coordinates
+     */
+    public Coordinates getLanderCords()
+    {
+        return landerCords;
+    }
+
+    /**
+     * Gets the current Coordinates of the explorer
+     * @return the explorer's Coordinates
+     */
+    public Coordinates getExplorerCords()
+    {
+        return this.explorerCords;
+    }
+
+    /**
+     * Sets the position of the explorer to the specified Coordinates
+     * @param cords where the explorer is moved
+     */
+    public void setExplorerCords(Coordinates cords)
+    {
+        this.explorerCords = cords;
+    }
+
+    /**
+     * Removes a pair from the map using the specified key
+     * @param key Coordinates being removed with its String
+     */
+    public void removeRobotCordsMap(Coordinates key)
+    {
+        this.robotCordsMap.remove(key);
+    }
+
+    /**
+     * Puts a new Coordinates and String pair into this robotCordsMap
+     * @param key the Coordinates being added
+     * @param value the corresponding String being added
+     */
+    public void putRobotCordsMap(Coordinates key, String value)
+    {
+        this.robotCordsMap.put(key, value);
     }
 }
